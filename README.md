@@ -27,13 +27,13 @@ We'll need many new developments from:
 - Coherent theory of mind behind Social AGIs
 - Ways to test and debug Social AGIs
 
-## SAMANTHA AGI
+## Div AGI
 
-The first Social AGI in this repo is called **SAMANTHA** (Self-Reflective Artificial Mind Attuned to Naturalistic Thought and Human Adaptability). She is an AI entity that demonstrates the capacity for self-reflective thought during conversation.
+The first Social AGI in this repo is called **Div** (Self-Reflective Artificial Mind Attuned to Naturalistic Thought and Human Adaptability). She is an AI entity that demonstrates the capacity for self-reflective thought during conversation.
 
-[Meet Samantha](http://meetsamantha.ai) here!
+[Meet Div](http://meetDiv.ai) here!
 
-Note: Right now, there isn't a great decomposition between Samantha as a S-AGI and the frontend for interacting with Samantha - that will change soon!
+Note: Right now, there isn't a great decomposition between Div as a S-AGI and the frontend for interacting with Div - that will change soon!
 
 ## Philosophy
 
@@ -41,9 +41,9 @@ It is now notoriously difficult to imbue agenda, intention, and personality into
 
 Internal worlds are as rich, if not richer, than the completions they generate. Modeling those worlds is then required to create dialog that mimicks the feeling of human dialog.
 
-We are beginning to see the creation of internal world between Chain of Thought reasoning, Simaculra of agents and Baby AGI, modeling the hidden state of agentic interactions is now the forefront of AI research.  SAMANTHA takes this same approach but applies the concept to dialog.
+We are beginning to see the creation of internal world between Chain of Thought reasoning, Simaculra of agents and Baby AGI, modeling the hidden state of agentic interactions is now the forefront of AI research. Div takes this same approach but applies the concept to dialog.
 
-Before Samantha speaks, she goes through an internal modeling process:
+Before Div speaks, she goes through an internal modeling process:
 
 ```
 <FEELINGS SIMULATION>
@@ -62,31 +62,37 @@ Before Samantha speaks, she goes through an internal modeling process:
 "In retrospect, ..."
 </SELF ANALYSIS>
 ```
+
 which imbues the richness of dynamic emotions, internal dialog, and self reflection into her thinking. Additionally, the self analysis is then fed back into the subsequent internal dialog simulation. Here's an example of the process in action.
 
 ![img_1.png](img_1.png)
 
-Samantha has a few tricks that I'll briefly mention:
+Div has a few tricks that I'll briefly mention:
 
 1. GPT-3.5 has trouble remembering the simulation, so a rememberence is put in the system message to remind in a reduced token way
 1. Open AI streaming is used, and the thoughts are parsed in real time to minimize latency
 
 ### Getting Started
 
-Samantha is a Next.js project. It requires one environment variable to be set
+Div is a Next.js project. It requires one environment variable to be set
+
 ```
 export OPENAI_API_KEY=your_api_key
 ```
+
 After installing npm locally,
+
 ```
 npm install
 ```
+
 Then, run the development server:
+
 ```bash
 npm run dev
 ```
 
-Now you should have a local copy of Samantha running at [http://localhost:3000](http://localhost:3000) - open with your browser to see the result.
+Now you should have a local copy of Div running at [http://localhost:3000](http://localhost:3000) - open with your browser to see the result.
 
 OpenAI calls are served via Next.js edge functions as [API routes](https://nextjs.org/docs/api-routes/introduction) and can be accessed on [http://localhost:3000/api/reply](http://localhost:3000/api/reply). This endpoint can be edited in `pages/api/reply.js`.
 
@@ -94,15 +100,18 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 ## Deploy on Vercel
 
-The easiest way to deploy a copy of Samantha is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+The easiest way to deploy a copy of Div is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
 
 Check out [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 Roughly goes like install vercel
+
 ```
 npm install -g vercel
 ```
+
 and then run
+
 ```
 vercel
 ```

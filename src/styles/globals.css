@@ -1,6 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+/* @import './tailwind.css'; */
+
+@layer utilities {
+  .bg-cool-blue {
+    background-color: #1C3A66;
+  }
+  .bg-dark-blue {
+    background-color: #0F1D3C;
+  }
+  .bg-electric-blue {
+    background-color: #00A3E6;
+  }
+  .bg-gray {
+    background-color: #A0A0A0;
+  }
+  .bg-gradient-to-r-from-cool-blue-via-electric-blue-to-dark-blue {
+    background-image: linear-gradient(to right, #1C3A66, #00A3E6, #0F1D3C);
+  }
+  /* Add the rest of your custom utility classes */
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;

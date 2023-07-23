@@ -1,4 +1,45 @@
-import { OpenAI } from "openai-streams";
+import * as yaml from "js-yaml";
+import { OpenAI } from "langchain/llms/openai";
+import { JsonSpec, JsonObject } from "langchain/tools";
+import { createOpenApiAgent, OpenApiToolkit } from "langchain/agents";
+import fetch from "node-fetch";
+import { StreamingTextResponse, LangChainStream } from "ai";
+
+async function initExecutor() {
+  let data;
+  try {
+    const yamlUrl = "https://multion.fly.dev/static/openapi.yaml"; // replace with your actual url
+    const response = await fetch(yamlUrl);
+    const yamlFile = await response.text();
+    data = yaml.load(yamlFile);
+    // console.log("loading openapi yaml data", data);
+    if (!data) {
+      throw new Error("Failed to load OpenAPI spec");
+    }
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+  };
+  const model = new OpenAI({
+    temperature: 0,
+    streaming: true,
+    callbacks: [
+      {
+        handleLLMNewToken(token) {
+          return new Response(token);
+        },
+      },
+    ],
+  });
+  const toolkit = new OpenApiToolkit(new JsonSpec(data), model, headers);
+  let executor = createOpenApiAgent(model, toolkit);
+  return executor;
+}
 
 const systemProgram = `<BACKGROUND>
 You are modeling the mind of Div, an AI clone of a human who is a thought provoking conversationalist.
@@ -106,66 +147,47 @@ function formatMessages(messages) {
   return sentMessages;
 }
 
-// export async function multion(req) {
-//   try {
-//     convertedSpec = await OpenAPISpec.fromURL(spec);
-//   } catch (e) {
-//     throw new Error(`Unable to parse spec from source ${spec}.`);
-//   }
-
-//   const { openAIFunctions, defaultExecutionMethod } =
-//     convertOpenAPISpecToOpenAIFunctions(convertedSpec);
-
-//   if (defaultExecutionMethod === undefined) {
-//     throw new Error(
-//       `Could not parse any valid operations from the provided spec.`
-//     );
-//   }
-// }
-
-function get_current_weather(location, unit = "fahrenheit") {
-  let weather_info = {
-    location: location,
-    temperature: "72",
-    unit: unit,
-    forecast: ["sunny", "windy"],
-  };
-  return json.dumps(weather_info);
-}
-
 export default async function handler(req) {
+  let sendData;
+  let data;
+
+  const { stream, handlers } = LangChainStream();
+
+  try {
+    const yamlUrl = "https://multion.fly.dev/static/openapi.yaml"; // replace with your actual url
+    const response = await fetch(yamlUrl);
+    const yamlFile = await response.text();
+    data = yaml.load(yamlFile);
+    // console.log("loading openapi yaml data", data);
+    if (!data) {
+      throw new Error("Failed to load OpenAPI spec");
+    }
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+  };
+  const model = new OpenAI({
+    model: "gpt-3.5-turbo-16k",
+    temperature: 0,
+    streaming: true,
+    callbacks: [handlers],
+  });
+  const toolkit = new OpenApiToolkit(new JsonSpec(data), model, headers);
+  let executor = createOpenApiAgent(model, toolkit);
+
   const { messages } = await req.json();
 
   let sentMessages = formatMessages(messages);
 
-  const stream = await OpenAI(
-    "chat",
-    {
-      model: "gpt-3.5-turbo-16k",
-      messages: sentMessages,
-      functions: [
-        {
-          name: "get_current_weather",
-          description: "Get the current weather in a given location",
-          parameters: {
-            type: "object",
-            properties: {
-              location: {
-                type: "string",
-                description: "The city and state, e.g. San Francisco, CA",
-              },
-              unit: {
-                type: "string",
-                enum: ["celsius", "fahrenheit"],
-              },
-            },
-            required: ["location"],
-          },
-        },
-      ],
-    },
-    { mode: "raw" }
-  );
+  const input = `The prompt is ${sentMessages}'`;
+
+  // let executor = await initExecutor();
+  const resultStream = await executor.call({ input }, {}, [handlers]);
 
   return new Response(stream);
 }
